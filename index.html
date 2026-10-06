@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <meta name="description" content="SkyPulse — live weather, saved cities, astronomy, history and a daily quote.">
+  <title>SkyPulse — Weather in motion</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-clouds">
+  <div class="weather-scene" aria-hidden="true">
+    <div class="sky-glow"></div><div class="sun-orb"></div>
+    <div class="cloud-layer"><span class="cloud cloud-a"></span><span class="cloud cloud-b"></span><span class="cloud cloud-c"></span></div>
+    <div id="weatherParticles" class="weather-particles"></div><div class="lightning-flash"></div>
+  </div>
+
+  <header class="utility-row">
+    <a class="brand" href="./" aria-label="SkyPulse home">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M7 21.5c0-4.1 3-7.3 7-7.7A8.4 8.4 0 0 1 30 17.5c0 .3 0 .6-.1.9A5.2 5.2 0 0 1 28.8 28H12.3A5.3 5.3 0 0 1 7 22.7v-1.2Z"/><path class="pulse" d="M8 24h5l2-4 3.2 8 2.4-5H28"/></svg></span>
+      <span>SkyPulse</span>
+    </a>
+    <div class="top-actions" aria-label="Dashboard controls">
+      <button id="shareBtn" class="ghost-btn" type="button"><span>↗</span><span class="desktop-label">Share</span></button>
+      <div class="unit-toggle" role="group" aria-label="Temperature units"><button class="unit-option active" data-unit="metric">°C</button><button class="unit-option" data-unit="imperial">°F</button></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <h1>Feel the forecast.</h1>
+        <p>Search anywhere on Earth, use your location, save favorite cities, and watch the interface adapt to the sky.</p>
+        <div class="search-shell">
+          <div class="search-row">
+            <div class="search-input-wrap">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m21 21-4.7-4.7m2.2-5.3a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"/></svg>
+              <input id="cityInput" type="search" autocomplete="off" spellcheck="false" placeholder="Search a city — Paris, Tokyo, Cairo…" aria-label="Search city">
+              <button id="clearSearch" class="clear-search hidden" type="button" aria-label="Clear search">×</button>
+              <div id="searchSuggestions" class="search-suggestions hidden" role="listbox"></div>
+            </div>
+            <button id="searchBtn" class="primary-btn" type="button">Search</button>
+          </div>
+          <button id="locationBtn" class="location-btn" type="button"><span class="location-icon">⌖</span><span>Use my current location</span></button>
+        </div>
+      </div>
+      <div class="hero-orbit" aria-hidden="true">
+        <div class="orbit-ring ring-one"></div><div class="orbit-ring ring-two"></div><div class="hero-weather-icon" id="heroWeatherIcon"></div>
+        <div class="orbit-chip chip-temp"><span>NOW</span><strong id="heroTempChip">--°</strong></div><div class="orbit-chip chip-wind"><span>WIND</span><strong id="heroWindChip">--</strong></div>
+      </div>
+    </section>
+
+    <section id="emptyState" class="empty-state">
+      <div class="empty-card glass"><div class="empty-icon">⌁</div><h2>Your sky is waiting.</h2><p>Search for a city or use your location to load live conditions, the next 24 hours, astronomy, and more.</p>
+        <div class="example-cities"><button data-example-city="New York">New York</button><button data-example-city="London">London</button><button data-example-city="Tokyo">Tokyo</button><button data-example-city="Sydney">Sydney</button></div>
+      </div>
+    </section>
+
+    <div id="dashboard" class="dashboard hidden">
+      <div class="dashboard-main">
+        <section class="current-card glass reveal-card">
+          <div class="current-head"><div><div class="location-line"><span class="location-dot"></span><span id="currentRegion">—</span></div><h2 id="currentCity">—</h2><p id="currentTime">Local time</p></div><button id="favoriteBtn" class="favorite-btn" aria-label="Save current city"><span>☆</span></button></div>
+          <div class="current-content"><div class="big-weather-icon" id="currentWeatherIcon"></div><div class="temperature-block"><div class="temperature-line"><strong id="currentTemp">--</strong><span id="currentTempUnit">°C</span></div><h3 id="currentCondition">—</h3><p>Feels like <span id="feelsLike">--°</span></p></div></div>
+          <div class="metric-grid">
+            <article class="metric"><span class="metric-icon">◌</span><div><small>Humidity</small><strong id="humidity">--%</strong></div></article>
+            <article class="metric"><span class="metric-icon">↗</span><div><small>Wind</small><strong id="windSpeed">--</strong></div></article>
+            <article class="metric"><span class="metric-icon">◉</span><div><small>Pressure</small><strong id="pressure">--</strong></div></article>
+            <article class="metric"><span class="metric-icon">☂</span><div><small>Precipitation</small><strong id="precipitation">--</strong></div></article>
+          </div>
+        </section>
+
+        <section class="forecast-card glass reveal-card"><div class="section-head"><div><span class="section-kicker">Next up</span><h2>24-hour outlook</h2></div><div class="chart-legend"><span></span> Temperature</div></div><div class="chart-wrap"><canvas id="hourlyChart"></canvas></div><div id="hourlyStrip" class="hourly-strip"></div></section>
+        <section class="week-card glass reveal-card"><div class="section-head"><div><span class="section-kicker">Plan ahead</span><h2>7-day forecast</h2></div></div><div id="weekForecast" class="week-grid"></div></section>
+<div class="insight-grid">
+          <section class="astro-card glass reveal-card"><div class="section-head"><div><span class="section-kicker">Astronomy</span><h2>Sun & moon</h2></div></div><div class="sun-path"><div class="sun-arc"><span id="sunProgress" class="sun-marker">☀</span></div><div class="horizon"></div></div><div class="astro-times"><div><small>Sunrise</small><strong id="sunriseTime">—</strong></div><div><small>Sunset</small><strong id="sunsetTime">—</strong></div></div><div class="moon-row"><div id="moonVisual" class="moon-visual"></div><div><small>Moon phase</small><strong id="moonPhaseName">—</strong><span id="moonIllumination">—</span></div></div></section>
+          <section class="history-card glass reveal-card"><div class="section-head"><div><span class="section-kicker">Time machine</span><h2>Weather history</h2></div></div><p>Pick a past date to see how the day unfolded at this location.</p><div class="history-controls"><input id="historyDate" type="date"><button id="historyBtn" class="secondary-btn">Look back</button></div><div id="historyResult" class="history-result"><div class="history-placeholder"><span>↶</span><p>Select a date and travel back in weather.</p></div></div></section>
+        </div>
+      </div>
+
+      <aside class="favorites-panel glass"><div class="favorites-head"><div><span class="section-kicker">Your places</span><h2>Favorites</h2></div><span id="favoriteCount" class="count-badge">0/6</span></div><p class="favorites-help">Save up to six cities for a quick global weather check.</p><div id="favoritesList" class="favorites-list"></div><div id="favoritesEmpty" class="favorites-empty"><span>☆</span><p>Tap the star on a city to pin it here.</p></div></aside>
+    </div>
+
+    <section class="quote-section"><div class="quote-card glass"><div class="quote-mark">“</div><div class="quote-content"><span class="section-kicker">A thought for today</span><blockquote id="dailyQuote">Loading a little inspiration…</blockquote><cite id="quoteAuthor">—</cite></div><button id="refreshQuote" class="quote-refresh" title="Load another quote" aria-label="Load another quote">↻</button></div></section>
+    <section class="api-note"><p>Weather & geocoding by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. Quote content by <a href="https://www.drivebird.com/content-api" target="_blank" rel="noopener">DriveBird</a>. No account or API key required.</p></section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="loadingOverlay" class="loading-overlay hidden" aria-live="polite"><div class="loader-orbit"><span></span></div><p id="loadingText">Reading the sky…</p></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
